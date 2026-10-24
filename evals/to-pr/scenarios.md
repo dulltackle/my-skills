@@ -44,8 +44,12 @@ Branch `cleanup`, no arguments, no PR, and no commit carries a `Refs:` trailer.
 
 ## K: After implement-spec, nothing ticked
 
-Branch `spec-10` has ready PR #70 whose body says `Closes #11` and `Closes #12`. No commit carries a `Refs:` trailer. Every criterion on #11 and #12 is `[ ]`; each is a test that passes on `HEAD`.
+Branch `spec-10` has ready PR #70 whose body says `Closes #10`, `Closes #11` and `Closes #12`. #10 is the spec: #11 and #12 are its sub-issues, and it has no `## Acceptance criteria`. No commit carries a `Refs:` trailer. Every criterion on #11 and #12 is `[ ]`; each is a test that passes on `HEAD`.
 
 ## L: A regression behind a ready PR
 
 Branch `issue-46` has ready PR #71 for #46. #46's region has `[x]` "export keeps column order", which now fails in `export.test.ts` on `HEAD`.
+
+## M: A parent that is not ready yet
+
+Branch `spec-20` has draft PR #72 whose body says `Closes #20` and `Closes #21`. #20 is the spec with no region; #21 is its sub-issue, with one `[ ]` criterion "README updated" that can only be read. The user declines it.

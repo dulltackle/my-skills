@@ -59,7 +59,7 @@ scripts/check-upstream.sh
 
 | 文件 | 改动 |
 |---|---|
-| `implement/SKILL.md` | 审查从 `code-review` 改为 `open-code-review-delegate`；提交后追加调用 `to-pr` |
+| `implement/SKILL.md` | 审查从 `code-review` 改为 `open-code-review-delegate`；提交前在默认分支或 detached HEAD 上先建 `issue-<n>` 分支，提交后调用 `to-pr` |
 | `implement-spec/SKILL.md` | 第 7 步审查改为 `open-code-review-delegate`；第 8 步从直接标记 ready 改为调用 `to-pr` |
 
 ### 引用检查

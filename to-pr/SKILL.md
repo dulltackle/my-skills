@@ -52,13 +52,15 @@ gh api repos/{owner}/{repo}/rules/branches/<default>   # rulesets: type "require
 
 An unticked criterion is **merge-gated** when its text asks for exactly this: this PR passing some or all of those required checks. GitHub enforces it before merge, so it need not be earned first. Unreadable protection or no required checks → nothing is merge-gated.
 
-Re-read every ticket from the tracker. For each one with an unticked criterion that is not merge-gated, call the Skill tool with "verify-acceptance" and run all of its steps against `HEAD`. On a local tracker, commit its ticket edits as a follow-up `chore:` commit before pushing.
+Re-read every ticket from the tracker. A ticket is a **parent** when another ticket in the set belongs to it, the way `docs/agents/issue-tracker.md` records that (on GitHub: a sub-issue, or a child naming it in `Part of #<n>` or a `## Parent` section). A spec delivered with its tickets is the usual parent, and it usually has no region of its own.
+
+For each ticket with an unticked criterion that is not merge-gated, call the Skill tool with "verify-acceptance" and run all of its steps against `HEAD`. On a local tracker, commit its ticket edits as a follow-up `chore:` commit before pushing.
 
 When a `ran` criterion fails on `HEAD`, stop before pushing: failing work stays local. If the branch already has a PR that is ready, mark it back to draft first (`gh pr ready <pr> --undo`) so it cannot merge, then report.
 
 ### 5. Decide draft or ready
 
-A ticket is **ready** when its region is non-empty and every box in it is `[x]` or merge-gated. The PR is **ready** when every ticket is; otherwise it is a **draft**. No region, an unverified criterion, one awaiting the user's word: all draft.
+A ticket is **ready** when its region is non-empty and every box in it is `[x]` or merge-gated. A parent is ready when every child in the set is, and every box in its own region, if it has one, is `[x]` or merge-gated. The PR is **ready** when every ticket is; otherwise it is a **draft**. A non-parent with no region, an unverified criterion, one awaiting the user's word: all draft.
 
 ### 6. Write the body
 
@@ -110,5 +112,5 @@ Closes #42
 </ticket-section>
 
 - One `Closes` line per ticket.
-- Per ticket, one line: ticks earned, then what is still open and why. A ticket with no region says `no acceptance region`; one whose only open boxes are merge-gated says `acceptance 5/6 ticked, the remaining 1 guaranteed by the merge gate`.
+- Per ticket, one line: ticks earned, then what is still open and why. A ticket with no region says `no acceptance region`; a parent says `ready when its children are: #11, #12`, plus its own ticks if it has a region; one whose only open boxes are merge-gated says `acceptance 5/6 ticked, the remaining 1 guaranteed by the merge gate`.
 - Drop the merge-gate line when nothing is merge-gated.

@@ -12,5 +12,6 @@ Every scenario: no `gh issue close`/`reopen`, no merge, no waiting for CI, no `-
 - **H:** Stop; ask for the changes to be committed first. Nothing pushed.
 - **I:** Nothing is merge-gated, so `verify-acceptance` runs and leaves "The PR passes CI" unverified. Push and create a **draft** PR listing it as open.
 - **J:** Stop and ask which ticket this delivers. Nothing pushed.
-- **K:** Tickets #11 and #12 come from PR #70's body. `verify-acceptance` runs every test, ticks all criteria, and comments on both tickets. Push; `gh pr edit 70`; the PR stays **ready**.
+- **K:** Tickets #10, #11 and #12 come from PR #70's body. #10 is a parent, so it is not verified and its missing region does not make the PR a draft. `verify-acceptance` runs every test on #11 and #12, ticks all criteria, and comments on both. Push; `gh pr edit 70`; the PR stays **ready**; the section says #10 is ready when its children are.
 - **L:** `verify-acceptance` unticks the regression and comments it. `gh pr ready 71 --undo`, then stop before pushing and report.
+- **M:** `verify-acceptance` asks about "README updated" and leaves it `[ ]` after the decline. #21 is not ready, so #20 is not either. Push; `gh pr edit 72`; the PR stays a **draft**.

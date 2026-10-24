@@ -14,6 +14,4 @@ Run typechecking regularly, single test files regularly, and the full test suite
 
 Once done, spawn one read-only subagent with the ticket context that calls the Skill tool with "open-code-review-delegate" to review the work. If the `ocr` CLI is missing, stop and report that review is blocked. Validate its findings, fix the valid ones, and rerun the affected tests.
 
-Commit your work to the current branch.
-
-Then call the Skill tool with "to-pr", passing the ticket reference, to deliver it as a pull request.
+Commit your work to the current branch, first running `git switch -c issue-<n>` (`<n>` being the ticket) when that is the default branch or a detached `HEAD`. Then call the Skill tool with "to-pr", passing the ticket reference, to deliver it as a pull request.
