@@ -1,13 +1,13 @@
 ---
 name: to-pr
-description: "Deliver the current branch as a pull request that closes its tickets on merge: draft until every acceptance criterion is earned, ready once it is. Use when the user wants to open or update a PR for ticket work, after to-commit, or at the end of /implement-spec. Safe to re-run."
+description: "Deliver the current branch as a pull request that closes its tickets on merge: draft until every acceptance criterion is earned, ready once it is. Use when the user wants to open or update a PR for ticket work, or at the end of /implement and /implement-spec. Safe to re-run."
 ---
 
 # To PR
 
 Put the current branch on the remote as **one PR for its tickets**. The body says `Closes #<n>` from the start; **draft status is the gate**, since a draft cannot merge. The ticket closes when the PR merges, and no step of this skill closes or reopens a ticket.
 
-Read state from git, the PR, and the tracker, never from another skill's memory. Whoever committed the work (to-commit, implementer subagents, or the user by hand), this skill does the same thing.
+Read state from git, the PR, and the tracker, never from another skill's memory. Whoever committed the work (/implement, implementer subagents, or the user by hand), this skill does the same thing.
 
 Re-running is normal: a PR that already exists for the branch is updated, never duplicated.
 

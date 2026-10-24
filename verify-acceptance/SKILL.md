@@ -1,6 +1,6 @@
 ---
 name: verify-acceptance
-description: "Verify a ticket's acceptance criteria against the current commit and tick the earned ones on the ticket. Use when committing or delivering ticket work, when the user asks whether a ticket's criteria pass, or wants acceptance written back to an issue."
+description: "Verify a ticket's acceptance criteria against the current commit and tick the earned ones on the ticket. Use when delivering ticket work, when the user asks whether a ticket's criteria pass, or wants acceptance written back to an issue."
 ---
 
 # Verify Acceptance
@@ -9,7 +9,7 @@ Check each acceptance criterion of a ticket against the current commit, then rec
 
 An `[x]` is a claim that somebody checked, and a wrong one is a lie that sits on the ticket forever. So every tick this skill writes is **earned**: you ran something and watched it pass, or the user gave their word on something you could only read. **When in doubt, don't tick, and say why.**
 
-This skill never commits, pushes, opens a PR, or closes or reopens a ticket. The caller decides where the write-back sits relative to its commit, so it may run the steps below in separate stretches.
+This skill never commits, pushes, opens a PR, or closes or reopens a ticket. It runs against work that is already committed; on a local tracker the caller commits the ticket edits.
 
 ## Which tracker
 

@@ -2,7 +2,7 @@
 
 For repos whose `docs/agents/issue-tracker.md` configures **local markdown**. One file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`.
 
-The ticket file is *in* the repo, so every edit to it lands in a commit. Edit it with the Edit tool; the caller stages and commits it.
+The ticket file is *in* the repo, so every edit to it lands in a commit. Edit it with the Edit tool; the caller commits it on top of the work it verifies.
 
 ## The acceptance-criteria region
 
@@ -35,7 +35,7 @@ The `**Status:**` line stays as it is: this skill never closes or reopens a tick
 
 ## Rolling back
 
-Whenever a run stops before the caller's commit lands (a hook refusing, a mismatch, a write failure), the ticks already written come back off:
+Whenever a run stops before its ticket edit is committed (a mismatch, a write failure, a hook refusing that commit), the ticks already written come back off:
 
 ```bash
 git checkout -- .scratch/<feature-slug>/issues/<NN>-<slug>.md
@@ -48,13 +48,13 @@ git checkout -- .scratch/<feature-slug>/issues/<NN>-<slug>.md
   Nothing changed, nothing committed. The tree is as it was; check the ticket and re-run.
 ```
 
-**Rollback only reaches a tracked file.** On a ticket's first run the file is usually untracked, since ticket files are written but not committed until this skill's first write-back lands, and `git checkout` fails with `pathspec did not match`. That is expected: leave the edits in place and say plainly what was written, so the user can undo it by hand.
+**Rollback only reaches a tracked file.** On a ticket's first run the file is usually untracked, since ticket files are written but not committed until the first write-back is, and `git checkout` fails with `pathspec did not match`. That is expected: leave the edits in place and say plainly what was written, so the user can undo it by hand.
 
 ```
 ⚠ #03 not committed. The ticket file is not under version control, so it cannot be rolled back.
   Written: ticked 2 acceptance criteria. Check them by hand and re-run.
 ```
 
-## After a commit has landed
+## Committing the edit
 
-A write-back after the caller's commit (the confirmation pass, or a delivery-time verification) never amends that commit. Land the ticket edit as a follow-up `chore:` commit and say so. A failure here is a split state, not a rollback: name the criteria the ticket is behind by.
+Each write-back pass lands as its own follow-up `chore:` commit on top of the work it verifies; never amend. Once one has landed, a failure in a later pass (the confirmation pass) is a split state, not a rollback: name the criteria the ticket is behind by.
