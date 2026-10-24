@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 检查覆盖上游的 skill 是否与上游发生漂移。
+# 检查覆盖上游的 skill 是否与上游最新版保持一致。
 #
-# 1. 对比上游锁定提交（PINNED）与上游 main：上游改了覆盖文件就报告并退出 1。
-# 2. 对比锁定提交与本地覆盖版本：改动块数超过 ALLOWED 就退出 1。
-#
-# 上游更新后：把上游新原文合入本地覆盖文件、保留允许的改动块，再把 PINNED 改成新提交。
+# 拉取上游 main（或第一个参数指定的 ref）上的覆盖文件，与本地版本对比：
+# 改动块数超过 ALLOWED 说明上游在别处有更新，打印 diff 并退出 1。
+# 处理方式：把上游新原文合入本地覆盖文件，只保留允许的改动块，再重跑直到通过。
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 UPSTREAM="mattpocock/skills"
-PINNED="5beb35b040e3de97e54fa9e386d7e42d15c295c2"
 REF="${1:-main}"
 
-# 本地路径 → 允许与锁定版本不同的改动块数
+# 本地路径 → 允许与上游不同的改动块数
 declare -A ALLOWED=(
   [implement/SKILL.md]=2
   [implement/agents/openai.yaml]=0
@@ -24,29 +22,23 @@ declare -A ALLOWED=(
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-fetch() {
-  curl -fsSL "https://raw.githubusercontent.com/$UPSTREAM/$1/skills/engineering/$2" -o "$3"
-}
+# 依次精确匹配分支、标签；都不是则视为提交 SHA
+sha="$(git ls-remote "https://github.com/$UPSTREAM" "refs/heads/$REF" "refs/tags/$REF" | cut -f1 | head -n1)"
+sha="${sha:-$REF}"
+[[ -n "$sha" ]] || { echo "✗ 无法解析上游 $REF"; exit 1; }
 
 status=0
 for path in "${!ALLOWED[@]}"; do
-  key="${path//\//_}"
-  fetch "$PINNED" "$path" "$TMP/$key.pinned"
-  fetch "$REF" "$path" "$TMP/$key.latest"
+  upstream="$TMP/${path//\//_}"
+  curl -fsSL "https://raw.githubusercontent.com/$UPSTREAM/$sha/skills/engineering/$path" -o "$upstream"
 
-  if ! diff -q "$TMP/$key.pinned" "$TMP/$key.latest" >/dev/null; then
-    echo "✗ 上游已修改 $path（$PINNED → $REF）："
-    diff -u --label "pinned/$path" --label "$REF/$path" "$TMP/$key.pinned" "$TMP/$key.latest" || true
-    status=1
-  fi
-
-  hunks="$(diff -U0 "$TMP/$key.pinned" "$REPO/$path" | grep -c '^@@' || true)"
+  hunks="$(diff -U0 "$upstream" "$REPO/$path" | grep -c '^@@' || true)"
   if (( hunks > ALLOWED[$path] )); then
-    echo "✗ 本地 $path 有 $hunks 处改动，允许 ${ALLOWED[$path]} 处："
-    diff -u --label "pinned/$path" --label "local/$path" "$TMP/$key.pinned" "$REPO/$path" || true
+    echo "✗ $path 与上游 ${sha:0:7} 有 $hunks 处不同，允许 ${ALLOWED[$path]} 处："
+    diff -u --label "upstream/$path" --label "local/$path" "$upstream" "$REPO/$path" || true
     status=1
   fi
 done
 
-(( status == 0 )) && echo "通过：覆盖文件与上游 $PINNED 一致，仅含允许的改动。"
+(( status == 0 )) && echo "通过：覆盖文件与上游 $REF（${sha:0:7}）一致，仅含允许的改动。"
 exit "$status"
