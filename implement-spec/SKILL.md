@@ -1,31 +1,40 @@
 ---
 name: implement-spec
-description: "Implement a spec and its tickets in parallel, with OCR review and verified acceptance criteria."
+description: "Implement the result of /to-spec and /to-tickets in code."
 disable-model-invocation: true
 ---
 
-# Implement Spec
+You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
 
-Deliver the spec on one integration branch. Carry authorized work through acceptance; ask the user when progress requires a goal or scope change, additional authorization, or resolution of a blocker you cannot remove. Treat tickets as a dependency graph: keep ready, independent work moving in parallel. The coordinator owns the run record; pass context through ticket identities, commits, and evidence paths.
+The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
-**Report stalls at every stage.** Follow [stalled progress](progress.md) after two consecutive attempts produce the same failure without new evidence, or two consecutive rounds fail to narrow the problem. Report confirmed permission or external dependency blockers immediately. Continue authorized work; pause only paths requiring a user decision, subject to existing stage gates.
+The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
 
-## Process
+The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
 
-1. **Establish scope.** Read the project's `docs/agents/issue-tracker.md`, then complete [task discovery](task-discovery.md). Begin implementation once the first complete snapshot and relationship classification are recorded. Propose missing acceptance criteria and obtain the user's confirmation; continue independent paths.
-2. **Establish the run.** Read [branches and run records](run-record.md), preserve the baseline, and create `run.json` outside the repository. Report its absolute path. Read [run resources](resource-management.md) before creating persistent resources or resuming work; keep resource details in the registry.
-3. **Implement ready tickets.** Follow [implementation, review, and merging](implementation.md). Use TDD at the agreed highest observable seam, targeted tests, and typechecking. Obtain independent read-only OCR review for each ticket; retain the reviewer through its fix loop. The coordinator merges sequentially and advances the ready frontier. Reserve full formal checks for a stable candidate.
-4. **Hand off stages.** Follow [stage handoff](collaboration.md) between functional implementation, performance work, and final acceptance for check close-out, reviewer continuity, and compact handoff packets.
-5. **Review integration.** Follow [integration review](integration-review.md). Reconcile prior coverage against OCR's full-range inventory, including interactions, conflict resolutions, and gaps. Enter acceptance when all valid findings are resolved and affected checks pass.
-6. **Verify and write back.** Follow [acceptance and handoff](acceptance.md). Complete discovery before delivery and pin the candidate commit. Use established formal checks to fill missing or invalidated evidence, retaining valid original sources. Match current criteria exactly before write-back. The optional [evidence plan](evidence-plan.md) handles mechanical correspondence; an independent reviewer judges semantic requirements.
-7. **Deliver and clean up.** Once every ticket has a nonempty acceptance region, all criteria are earned, and write-back succeeds, follow the acceptance protocol to push and mark the PR ready. Process temporary resources individually. Report delivery and cleanup separately; retain resources whose state remains unknown.
+Communication to and from subagents should be sparse. Communicate primarily through **context pointers**: to the spec, tickets, research notes, and previous commits. Don't duplicate information already available via pointers.
 
-## Conditional references
+**Implementer subagents** should be run in the background where possible for maximum concurrency.
 
-- **Performance work:** read [performance work](performance.md) for evidence-driven reviews and user budgets. Its legacy-record pointer covers migration when needed.
-- **Query failure, context compaction, or external-state resume:** read [failure and recovery](task-discovery.md#failure-and-recovery). Distinguish first discovery from a saved complete snapshot; preserve only the local work that the recovery rules allow.
-- **Waiting for agents or long checks:** use notifications or bounded waits. Update the run record on completion, blockers, or interface changes. Read detailed logs for a concrete failure and maintain host-required progress updates.
-- **Creating, observing, or cleaning up sessions, services, formal jobs, or worktrees:** read [run resources](resource-management.md). Register original interface results; repair failed registration using the saved result. Short synchronous commands need only execution records.
-- **Changing this skill's maintained source or installed copy:** read [maintenance and evaluation](maintenance.md). Verify the source, preserve backups, and check the actual installation mechanism, scope, and hashes before any authorized synchronization. Unproven benefits remain a pilot.
+## Steps
 
-Use each protocol's completion criteria. Keep unverified executable requirements unchecked. Scope and cost changes remain subject to user authorization and host approval.
+1. Read the spec and tickets to understand the task graph.
+
+2. (optional) Use an **exploration subagent** to conduct any exploration required by the tickets - relevant codebase files or external documentation. Ensure the exploration subagent can save files - it should save its markdown notes in a directory outside the repo, accessible by all future subagents. This lets **implementer subagents** focus on implementation rather than exploration.
+
+3. Create the integration branch. If the issue tracker closes work through PRs, or the user asks for one, open a draft PR after the first merge in step 5 (a branch with no commits ahead of main can't open one), marked as closing the spec and tickets.
+
+4. Use **implementer subagents** to implement each ticket, each in its own worktree on its own branch. Each implementer subagent:
+   - confirms its worktree is based on the integration branch before starting, and resets onto it if not;
+   - calls the Skill tool with `tdd` to build the ticket;
+   - merges the integration branch tip into its own branch before reporting done
+
+5. Once an **implementer subagent** completes, merge its work to the integration branch with a **merger subagent**.
+
+6. If this changes the **frontier** of available tickets, kick off more **implementer subagents** to work on the new tickets. This allows for maximum concurrency.
+
+7. Once all tickets are complete, spawn one read-only subagent that calls the Skill tool with `open-code-review-delegate` on the integration branch. If the `ocr` CLI is missing, stop and report that review is blocked. Fix all valid issues raised by the code review in a single **implementer subagent**.
+
+8. If a draft PR exists, call the Skill tool with `to-pr` to verify the tickets and decide whether the PR stays a draft or goes ready. Otherwise, resolve each ticket the way the issue tracker closes work, and report the integration branch.
+
+9. Clean up all **implementer subagent** worktrees.

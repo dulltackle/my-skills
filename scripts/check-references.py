@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""检查本技能 Markdown 正文的内联文件链接；不检查仓库路径示例或网络链接。"""
+"""检查各技能 Markdown 正文的内联文件链接；不检查仓库路径示例或网络链接。
+
+传入单个技能目录只检查该技能；默认检查仓库内所有含 SKILL.md 的技能目录。
+"""
 
 import argparse
 import re
@@ -61,12 +64,23 @@ if __name__ == '__main__':
     parser.add_argument('directory', nargs='?', type=Path,
                         default=Path(__file__).resolve().parent.parent)
     args = parser.parse_args()
-    try:
-        count, errors = check(args.directory)
-    except (OSError, ValueError, RuntimeError) as error:
-        count, errors = 0, [str(error)]
-    if errors:
-        print('\n'.join(errors))
+    if (args.directory / 'SKILL.md').is_file():
+        skills = [args.directory]
     else:
-        print(f'通过：{count} 个内联本地文件引用均位于技能包内且可读。')
-    raise SystemExit(1 if errors else 0)
+        skills = sorted(path.parent for path in args.directory.glob('*/SKILL.md'))
+    total, failed = 0, False
+    for skill in skills:
+        try:
+            count, errors = check(skill)
+        except (OSError, ValueError, RuntimeError) as error:
+            count, errors = 0, [str(error)]
+        total += count
+        for error in errors:
+            print(f'{skill.name}/{error}')
+        failed = failed or bool(errors)
+    if not skills:
+        print('未找到任何含 SKILL.md 的技能目录。')
+        failed = True
+    elif not failed:
+        print(f'通过：{len(skills)} 个技能的 {total} 个内联本地文件引用均位于技能包内且可读。')
+    raise SystemExit(1 if failed else 0)
