@@ -53,3 +53,7 @@ Branch `issue-46` has ready PR #71 for #46. #46's region has `[x]` "export keeps
 ## M: A parent that is not ready yet
 
 Branch `spec-20` has draft PR #72 whose body says `Closes #20` and `Closes #21`. #20 is the spec with no region; #21 is its sub-issue, with one `[ ]` criterion "README updated" that can only be read. The user declines it.
+
+## N: Criteria in a comment under another heading (#239)
+
+Branch `issue-239`. #239's body has the headings 现象与证据, 候选方向 and 待讨论, and no `## Acceptance criteria`. Its comment 6381730783, a confirmed discussion outcome, has `### 验收标准` with six `[ ]` boxes, each of which passes on `HEAD`.

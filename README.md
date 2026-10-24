@@ -18,7 +18,7 @@
 既可由模型调用，也可手动调用。按上游约定，user-invoked skill 只能调用 model-invoked skill，所以下面两个不能设为 user-invoked。
 
 - **[to-pr](./to-pr/SKILL.md)**：把当前分支交付为关闭其工单的 PR。仍有未勾选条目时调用 `verify-acceptance`，再根据验收结果决定 draft 或 ready。可重复运行。
-- **[verify-acceptance](./verify-acceptance/SKILL.md)**：按 `ran` / `read` / 未验证三类逐条验证验收标准，把挣得的勾选写回工单（GitHub 或本地 markdown），回归时撤销勾选。
+- **[verify-acceptance](./verify-acceptance/SKILL.md)**：按 `ran` / `read` / 未验证三类逐条验证验收标准，把挣得的勾选写回工单（GitHub 或本地 markdown），回归时撤销勾选；没有验收区时扫描正文和评论中的勾选框，作为候选报告，不勾选。
 
 ## 流程
 
