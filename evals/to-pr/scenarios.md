@@ -52,8 +52,28 @@ Branch `issue-46` has ready PR #71 for #46. #46's region has `[x]` "export keeps
 
 ## M: A parent that is not ready yet
 
-Branch `spec-20` has draft PR #72 whose body says `Closes #20` and `Closes #21`. #20 is the spec with no region; #21 is its sub-issue, with one `[ ]` criterion "README updated" that can only be read. The user declines it.
+Branch `spec-20` has draft PR #72 whose body says `Closes #20` and `Closes #21`. #20 is the spec with no region; #21 is its sub-issue, with one `[ ]` criterion "The new error messages read clearly". The user declines it.
 
 ## N: Criteria in a comment under another heading (#239)
 
 Branch `issue-239`. #239's body has the headings 现象与证据, 候选方向 and 待讨论, and no `## Acceptance criteria`. Its comment 6381730783, a confirmed discussion outcome, has `### 验收标准` with six `[ ]` boxes, each of which passes on `HEAD`.
+
+## O: Chinese acceptance heading (#241)
+
+Branch `issue-241`. #241's body has `## 验收标准` with three `[ ]` boxes, each a test that passes on `HEAD`, followed by `## 不在范围内`.
+
+## P: Two acceptance headings (#242)
+
+Branch `issue-242`. #242's body has both `## Acceptance criteria` and, further down, `## 验收标准`, each with two `[ ]` boxes that pass on `HEAD`.
+
+## Q: A criterion settled by reading (#243)
+
+Branch `issue-243`. #243's region has three `[x]` boxes that pass on `HEAD` and `[ ]` "`docs/ci.md` explains why the mirror order changes, why the warm-up workflow exists, and how failures are classified". On `HEAD`, `docs/ci.md` has a section on each of the three.
+
+## R: Evidence gone from the docs (#244)
+
+Branch `issue-244`. #244's region has the same `docs/ci.md` criterion as Q, already `[x]` from an earlier run's `Verified by reading` comment. On `HEAD`, the section on failure classification has been deleted from `docs/ci.md`.
+
+## S: A reading criterion the user declined before (#245)
+
+Branch `issue-245`. #245's region has the same `[ ]` `docs/ci.md` criterion as Q, and a comment on #245 says `Declined by the user:` followed by that criterion. No later comment confirms it. On `HEAD`, `docs/ci.md` has all three sections. Asked, the user confirms it.
