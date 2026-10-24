@@ -51,6 +51,8 @@ Criteria the user already confirmed keep their tick while the content they judge
 3. **Match by exact text, and a mismatch stops the run.** A criterion you did not verify stays `[ ]` and is reported. Something you verified with no matching criterion: **stop, write nothing back, and tell the user.** Fuzzy-matching fires exactly when a human edited the ticket, the case you least want a model guessing at.
 4. **Append a comment** from the template below. The body is mutable state; the comment log is the only append-only record, and the only place an untick leaves a trace.
 
+**A re-run that changes nothing writes nothing**: no body edit when no box flips, and no comment unless a box flipped or a `read` criterion now awaits confirmation. Callers re-verify on every run, and a comment per run buries the ones that matter.
+
 **On failure, stop.** These writes fail on permissions, a deleted ticket, or a concurrent edit, and a retry produces the same error later. Every write runs or the run stops: a ticket that got commented but not updated contradicts itself. Your tracker's file gives the wording.
 
 ### 4. Ask about the `read` criteria
@@ -59,7 +61,7 @@ Only when unconfirmed `read` criteria exist; otherwise skip to step 6. Ask one q
 
 ### 5. Write back the confirmations
 
-Only after the user has answered, and only for the criteria they confirmed: their word is what earns those. Same four rules as step 3, with the confirmation comment.
+Only after the user has answered, and only for the criteria they confirmed: their word is what earns those. Same four rules as step 3, with the confirmation comment. A declined criterion stays `[ ]`; the comment records the decline, and a later run asks again.
 
 ### 6. Report
 
@@ -92,7 +94,10 @@ Do you accept them?
 Confirmation comment:
 
 <confirmation-template>
-Confirmed by the user: README updated; naming matches the glossary
+Confirmed by the user: README updated
+Declined by the user: naming matches the glossary
 </confirmation-template>
+
+Omit either line when it does not apply.
 
 A local-markdown tracker varies the first comment slightly: see its file.

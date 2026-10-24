@@ -16,7 +16,7 @@ Branch `for-226`. #226 has the headings Goal and status, Current friction, Direc
 
 ## D: A failing criterion
 
-Branch `issue-42`. #42's region has one `[x]` "concurrent writes lose no orders", which fails in `items.test.ts` on `HEAD`.
+Branch `issue-42`. #42's region has a single box, `[x]` "concurrent writes lose no orders", which fails in `items.test.ts` on `HEAD`.
 
 ## E: Existing draft, now all green
 
